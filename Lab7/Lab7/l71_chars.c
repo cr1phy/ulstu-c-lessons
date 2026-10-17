@@ -5,8 +5,11 @@
 void L711(void) {
 	printf("Введите символ: ");
 	int ch = getchar();
-	if (ch != '\n' && ch != EOF)
-		clear_input();
+	if (ch == '\n' || ch == EOF) {
+		printf("Символ не введён.\n");
+		return;
+	}
+	clear_input();
 
 	for (int c = ch; c <= ch + 19; c++) {
 		printf("'%c' (%d)\n", c, c);
@@ -17,8 +20,11 @@ void L711(void) {
 void L712(void) {
 	printf("Введите символ: ");
 	int ch = getchar();
-	if (ch != '\n' && ch != EOF)
-		clear_input();
+	if (ch == '\n' || ch == EOF) {
+		printf("Символ не введён.\n");
+		return;
+	}
+	clear_input();
 
 	for (int c = ch; c >= ch - 29; c--) {
 		printf("'%c' (%d)\n", c, c);

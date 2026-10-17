@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "L72.h"
+#include "input.h"
 
 char* CreateNewString_L7261(char s1[]) {
 	int length = 0, hasDigits = 0;
@@ -65,7 +66,7 @@ static void demo(char* (*create)(char*)) {
 	char s1[100];
 
 	printf("s1=");
-	fgets(s1, _countof(s1), stdin);
+	if (!read_line(s1, sizeof s1)) return;
 
 	char* s2 = create(s1);
 	if (s2 == NULL) {

@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "L71.h"
+#include "input.h"
 
 void L713(void) {
 	char s[128];
 	printf("Введите строку: ");
-	fgets(s, _countof(s), stdin);
+	if (!read_line(s, sizeof s)) return;
 
-	printf("Вы ввели строку\n>>> %s", s);
+	printf("Вы ввели строку\n>>> %s\n", s);
 
 	int count = 0;
 	for (int i = 0; s[i] != '\0'; i++) {
@@ -20,31 +21,31 @@ void L713(void) {
 void L714(void) {
 	char s[128];
 	printf("Введите строку: ");
-	fgets(s, _countof(s), stdin);
+	if (!read_line(s, sizeof s)) return;
 
-	printf("Вы ввели строку\n>>> %s", s);
+	printf("Вы ввели строку\n>>> %s\n", s);
 
 	for (int i = 0; s[i] != '\0'; i++) {
 		if (s[i] == ' ')
 			s[i] = '#';
 	}
 
-	printf("Строка после обработки\n>>> %s", s);
+	printf("Строка после обработки\n>>> %s\n", s);
 }
 
 void L7151(void) {
 	char s[128];
 	printf("Введите строку: ");
-	fgets(s, _countof(s), stdin);
+	if (!read_line(s, sizeof s)) return;
 
-	printf("Вы ввели строку\n>>> %s", s);
+	printf("Вы ввели строку\n>>> %s\n", s);
 
 	for (int i = 0; s[i] != '\0'; i++) {
 		if (isdigit((unsigned char)s[i]))
 			s[i] = '$';
 	}
 
-	printf("Строка после обработки\n>>> %s", s);
+	printf("Строка после обработки\n>>> %s\n", s);
 }
 
 static int isdigit_L7152(int ch) {
@@ -54,38 +55,38 @@ static int isdigit_L7152(int ch) {
 void L7152(void) {
 	char s[128];
 	printf("Введите строку: ");
-	fgets(s, _countof(s), stdin);
+	if (!read_line(s, sizeof s)) return;
 
-	printf("Вы ввели строку\n>>> %s", s);
+	printf("Вы ввели строку\n>>> %s\n", s);
 
 	for (int i = 0; s[i] != '\0'; i++) {
 		if (isdigit_L7152(s[i]))
 			s[i] = '$';
 	}
 
-	printf("Строка после обработки\n>>> %s", s);
+	printf("Строка после обработки\n>>> %s\n", s);
 }
 
 void L716(void) {
 	char s[128];
 	printf("Введите строку: ");
-	fgets(s, _countof(s), stdin);
+	if (!read_line(s, sizeof s)) return;
 
-	printf("Вы ввели строку\n>>> %s", s);
+	printf("Вы ввели строку\n>>> %s\n", s);
 
 	for (int i = 0; s[i] != '\0'; i++) {
 		s[i] = (char)toupper((unsigned char)s[i]);
 	}
 
-	printf("Строка после обработки\n>>> %s", s);
+	printf("Строка после обработки\n>>> %s\n", s);
 }
 
 void L717(void) {
 	char s[128];
 	printf("Введите строку: ");
-	fgets(s, _countof(s), stdin);
+	if (!read_line(s, sizeof s)) return;
 
-	printf("Вы ввели строку\n>>> %s", s);
+	printf("Вы ввели строку\n>>> %s\n", s);
 
 	for (int i = 0; s[i] != '\0'; i++) {
 		char ch = (char)tolower((unsigned char)s[i]);
@@ -93,5 +94,5 @@ void L717(void) {
 			s[i] = '&';
 	}
 
-	printf("Строка после обработки\n>>> %s", s);
+	printf("Строка после обработки\n>>> %s\n", s);
 }

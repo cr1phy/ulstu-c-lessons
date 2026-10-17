@@ -1,36 +1,73 @@
 ﻿#include <stdio.h>
 #include <Windows.h>
+#include <limits.h>
 
 #define NUM_ELEMENTS 10
 
 int arr[NUM_ELEMENTS];
 int n = 0;
 
-void printElements() {
+void clearInputLine(void) {
+	int ch;
+	while ((ch = getchar()) != '\n' && ch != EOF) { }
+}
+
+// Проверка результата scanf_s не позволяет использовать неинициализированные данные.
+int readNumber(int* value) {
+	if (scanf_s("%d", value) == 1) return 1;
+	clearInputLine();
+	printf("Ошибка ввода: требуется целое число.\n");
+	return 0;
+}
+
+// Не допускаем переполнение int при умножении.
+void multiplyElement(int index, int factor) {
+	long long result = (long long)arr[index] * factor;
+	if (result < INT_MIN || result > INT_MAX) {
+		printf("Переполнение int при умножении элемента с индексом %d.\n", index);
+		return;
+	}
+	arr[index] = (int)result;
+}
+
+void printElements(void) {
 	for (int i = 0; i < n; i++) {
 		printf("%d ", arr[i]);
 	}
 }
 
-void keyboardInput() {
+void keyboardInput(void) {
+	int count;
 	printf("n = ");
-	scanf_s("%d", &n);
-
-	printf("input %d values: ", n);
-	for (int i = 0; i < n; i++) {
-		scanf_s("%d", &arr[i]);
+	if (!readNumber(&count)) return;
+	if (count < 0 || count > NUM_ELEMENTS) {
+		printf("Размер массива должен быть от 0 до %d.\n", NUM_ELEMENTS);
+		clearInputLine();
+		return;
 	}
+
+	int values[NUM_ELEMENTS];
+	printf("input %d values: ", count);
+	for (int i = 0; i < count; i++) {
+		if (!readNumber(&values[i])) {
+			printf("Массив не изменён из-за ошибки ввода.\n");
+			return;
+		}
+	}
+	for (int i = 0; i < count; i++) arr[i] = values[i];
+	n = count;
 }
 
-void oddsX10() {
+void oddsX10(void) {
 	for (int i = 0; i < n; i++) {
-		if (arr[i] % 2 == 1) {
-			arr[i] *= 10;
+		if (arr[i] % 2 != 0) {
+			multiplyElement(i, 10);
 		}
 	}
 }
 
-int findMin() {
+int findMin(void) {
+	if (n == 0) return 0;
 	int result = arr[0];
 	for (int i = 1; i < n; i++) {
 		if (arr[i] < result)
@@ -39,7 +76,7 @@ int findMin() {
 	return result;
 }
 
-int countBigger10() {
+int countBigger10(void) {
 	int result = 0;
 	for (int i = 0; i < n; i++) {
 		if (arr[i] > 10) result++;
@@ -47,14 +84,15 @@ int countBigger10() {
 	return result;
 }
 
-int findLastEven() {
+int findLastEven(void) {
 	for (int x = n - 1; x >= 0; x--) {
 		if (arr[x] % 2 == 0) return x;
 	}
 	return -1;
 }
 
-int findIndexMin() {
+int findIndexMin(void) {
+	if (n == 0) return -1;
 	int index = 0;
 	for (int i = index; i < n; i++) {
 		if (arr[i] < arr[index]) index = i;
@@ -62,7 +100,8 @@ int findIndexMin() {
 	return index;
 }
 
-int findIndexMax() {
+int findIndexMax(void) {
+	if (n == 0) return -1;
 	int index = 0;
 	for (int i = index; i < n; i++) {
 		if (arr[i] > arr[index]) index = i;
@@ -70,7 +109,7 @@ int findIndexMax() {
 	return index;
 }
 
-int findFirstEven() {
+int findFirstEven(void) {
 	for (int i = 0; i < n; i++) {
 		if (arr[i] % 2 == 0) return i;
 	}
@@ -82,7 +121,6 @@ void deleteElement(int index) {
 		for (int i = index; (i + 1) < n; i++) {
 			arr[i] = arr[i + 1];
 		}
-		//arr[n - 1] = NULL;
 		n--;
 	}
 	else {
@@ -91,10 +129,10 @@ void deleteElement(int index) {
 }
 
 void insertElement(int index, int value) {
-	//if ((n + 1) > NUM_ELEMENTS) {
-	//	printf("число элементов превышает максималку.");
-	//	return;
-	//}
+	if (n >= NUM_ELEMENTS) {
+		printf("Вставка невозможна: массив заполнен (максимум %d элементов).\n", NUM_ELEMENTS);
+		return;
+	}
 	if (0 <= index && index <= n) {
 		for (int i = n; i > index; i--) {
 			arr[i] = arr[i - 1];
@@ -107,18 +145,18 @@ void insertElement(int index, int value) {
 	}
 }
 
-double arrayAverage() {
+double arrayAverage(void) {
 	double summ = 0.0;
 	for (int i = 0; i < n; i++) {
 		summ += arr[i];
 	}
-	return summ / n;
+	return n > 0 ? summ / n : 0.0;
 }
 
-void main() {
+int main(void) {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	int item;
+	int item = 0;
 	do {
 		printf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n");
 		if (n == 0)
@@ -157,7 +195,19 @@ void main() {
 		printf("\n");
 		printf("0: Выйти из программы\n");
 		printf(">>> ");
-		scanf_s("%d", &item);
+		int read = scanf_s("%d", &item);
+		if (read == EOF) break;
+		if (read != 1) {
+			clearInputLine();
+			printf("Неизвестная команда: введите число из меню.\n");
+			continue;
+		}
+		// Операции с минимумом, максимумом и средним требуют непустой массив.
+		if (n == 0 && (item == 3 || item == 6 || item == 7 || item == 8 ||
+			item == 12 || item == 23 || item == 24 || item == 27 || item == 30)) {
+			printf("Массив пуст: сначала введите элементы.\n");
+			continue;
+		}
 
 		switch (item) {
 		case 1:
@@ -181,7 +231,7 @@ void main() {
 		case 5:
 		{
 			int index = findLastEven();
-			if (index >= 0) arr[index] *= 2;
+			if (index >= 0) multiplyElement(index, 2);
 			else printf("Не найдено четных элементов\n");
 		}
 		break;
@@ -203,7 +253,7 @@ void main() {
 			printf("Индекс минимального элемента = %d\n", index);
 
 			for (int i = index + 1; i < n; i++) {
-				if (arr[i] % 2 != 0) arr[i] *= 10;
+				if (arr[i] % 2 != 0) multiplyElement(i, 10);
 			}
 		}
 		break;
@@ -222,7 +272,7 @@ void main() {
 		case 9:
 		{
 			for (int i = 0; i < n; i++) {
-				if (arr[i] % 2 == 0) arr[i] *= -1;
+				if (arr[i] % 2 == 0) multiplyElement(i, -1);
 			}
 		}
 		break;
@@ -247,8 +297,10 @@ void main() {
 			int indexMax = findIndexMax();
 			printf("Индекс максимального элемента = %d\n", indexMax);
 
-			for (int i = indexMin + 1; i < (indexMax - 1); i++) {
-				arr[i] *= 10;
+			int left = indexMin < indexMax ? indexMin : indexMax;
+			int right = indexMin > indexMax ? indexMin : indexMax;
+			for (int i = left + 1; i < right; i++) {
+				multiplyElement(i, 10);
 			}
 		}
 		break;
@@ -257,11 +309,12 @@ void main() {
 			int firstEven = findFirstEven();
 			int lastEven = findLastEven();
 			if (firstEven == -1) {
-				printf("чётные не найдены.\n");
+				printf("Чётные не найдены.\n");
 			}
-			
-			for (int i = firstEven; i < lastEven; i++) {
-				arr[i] *= 100;
+			else {
+				for (int i = firstEven + 1; i < lastEven; i++) {
+					multiplyElement(i, 100);
+				}
 			}
 		}
 		break;
@@ -269,19 +322,18 @@ void main() {
 		{
 			printf("Индекс удаляемого элемента = ");
 			int index;
-			scanf_s("%d", &index);
-			deleteElement(index);
+			if (readNumber(&index)) deleteElement(index);
 		}
 		break;
 		case 22:
 		{
 			printf("Перед каким элементом нужно вставить новый? Индекс = ");
 			int index;
-			scanf_s("%d", &index);
+			if (!readNumber(&index)) break;
 
 			printf("Значение, которое нужно вставить = ");
 			int value;
-			scanf_s("%d", &value);
+			if (!readNumber(&value)) break;
 
 			insertElement(index, value);
 		}
@@ -314,6 +366,13 @@ void main() {
 		break;
 		case 26:
 		{
+			int evenCount = 0;
+			for (int j = 0; j < n; j++)
+				if (arr[j] % 2 == 0) evenCount++;
+			if (n + evenCount > NUM_ELEMENTS) {
+				printf("Недостаточно места для дублирования всех чётных элементов.\n");
+				break;
+			}
 			int i = 0;
 			while (i < n) {
 				if (arr[i] % 2 == 0) {
@@ -370,28 +429,24 @@ void main() {
 		break;
 		case 31:
 		{
+			int write = 0;
 			int i = 0;
-			int evens_count = 0;
 			while (i < n) {
-				if (arr[i] % 2 == 0) {
-					evens_count++;
+				if (arr[i] % 2 != 0) {
+					arr[write++] = arr[i++];
+					continue;
 				}
-				else {
-					if (evens_count >= 3) {
-						evens_count = 0;
-					}
-					else {
-						while (evens_count > 0) {
-							i--;
-							deleteElement(i);
-							evens_count--;
-						}
-					}
+				int start = i;
+				while (i < n && arr[i] % 2 == 0) i++;
+				// Оставляем только цепочки длиной три и более.
+				if (i - start >= 3) {
+					for (int j = start; j < i; j++) arr[write++] = arr[j];
 				}
-				i++;
-			} 
+			}
+			n = write;
 		}
 		break;
 		}
 	} while (item != 0);
+	return 0;
 }
