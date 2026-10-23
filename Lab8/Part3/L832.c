@@ -69,7 +69,6 @@ void L832(void) {
 			word[length] = '\0';
 			print_word(fout, word);
 			length = 0;
-			// <br> только после слова, иначе последнее слово строки уедет на следующую
 			if (c == '\n') {
 				fprintf(fout, "<br>");
 			}

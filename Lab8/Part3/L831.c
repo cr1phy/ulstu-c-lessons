@@ -23,7 +23,7 @@ void L831(void) {
 
 	fprintf(fout, TEMPLATE_HTML_START);
 	while (1) {
-		int c = fgetc(fin); // int, чтобы EOF (-1) не путался с байтом 0xFF (буква 'я' в 1251)
+		int c = fgetc(fin);
 		if (c == EOF) {
 			break;
 		}
