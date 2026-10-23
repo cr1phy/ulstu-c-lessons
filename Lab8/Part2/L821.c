@@ -38,7 +38,8 @@ void L821(void) {
 			printf(">>> %s", s);
 		}
 	}
-	
+
 	fclose(fout);
 	fclose(fin);
 }
+
