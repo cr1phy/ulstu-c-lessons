@@ -23,11 +23,11 @@ void L831(void) {
 
 	fprintf(fout, TEMPLATE_HTML_START);
 	while (1) {
-		unsigned char c = fgetc(fin);
-		if (c == (unsigned char)EOF) {
+		int c = fgetc(fin); // int, чтобы EOF (-1) не путался с байтом 0xFF (буква 'я' в 1251)
+		if (c == EOF) {
 			break;
 		}
-		if (c == (unsigned char)'\n') {
+		if (c == '\n') {
 			fprintf(fout, "<br>");
 			continue;
 		}

@@ -1,4 +1,4 @@
-﻿#define _CRT_NO_SECURE_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <Windows.h>
@@ -30,8 +30,9 @@ void L823(void) {
 	while (!feof(fin)) {
 		int has_latin = 0;
 		if (fgets(s, MAX_LEN, fin) != NULL) {
-			for (int i = 0; i < MAX_LEN; i++) {
-				if (!has_latin && isalpha(s[i])) {
+			// идём только до '\0': дальше в s лежит хвост от прошлой строки
+			for (int i = 0; s[i] != '\0' && !has_latin; i++) {
+				if ((s[i] >= 'A' && s[i] <= 'Z') || (s[i] >= 'a' && s[i] <= 'z')) {
 					has_latin = 1;
 				}
 			}

@@ -1,4 +1,4 @@
-﻿#include "funcs.h";
+﻿#include "funcs.h"
 
 int main(void) {
 	//L821();

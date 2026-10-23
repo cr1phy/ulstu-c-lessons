@@ -1,8 +1,8 @@
-﻿#include <stdio.h>
+﻿#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
 #include <Windows.h>
 #include <limits.h>
-
-#define _CRT_SECURE_NO_WARNINGS
 
 #define NUM_ELEMENTS 10
 
@@ -182,6 +182,10 @@ void load(void) {
 
 	int temp = 0;
 	while (fscanf_s(fin, "%d", &temp) == 1) {
+		if (n >= NUM_ELEMENTS) {
+			printf("В файле больше %d чисел, лишние пропущены.\n", NUM_ELEMENTS);
+			break;
+		}
 		arr[n++] = temp;
 	}
 
@@ -486,13 +490,13 @@ void L813(void) {
 			}
 			n = write;
 		}
+		break;
 		case 101:
 			load();
 			break;
 		case 102:
 			save();
 			break;
-		break;
 		}
 	} while (item != 0);
 }

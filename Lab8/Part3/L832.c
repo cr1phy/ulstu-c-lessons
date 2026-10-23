@@ -66,12 +66,13 @@ void L832(void) {
 	int c;
 	while ((c = fgetc(fin)) != EOF) {
 		if (isdelim((char)c)) {
-			if (c == '\n') {
-				fprintf(fout, "<br>");
-			}
 			word[length] = '\0';
 			print_word(fout, word);
 			length = 0;
+			// <br> только после слова, иначе последнее слово строки уедет на следующую
+			if (c == '\n') {
+				fprintf(fout, "<br>");
+			}
 			fputc(c, fout);
 		}
 		else if (length < MAX_LEN - 1) {

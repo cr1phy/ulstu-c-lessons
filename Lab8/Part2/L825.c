@@ -1,4 +1,4 @@
-﻿#define _CRT_NO_SECURE_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <Windows.h>
@@ -37,4 +37,7 @@ void L825(void) {
 			fflush(fout);
 		}
 	}
+
+	fclose(fout);
+	fclose(fin);
 }

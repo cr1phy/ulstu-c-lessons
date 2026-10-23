@@ -1,7 +1,7 @@
 ﻿#include <stdio.h>
 #include <Windows.h>
 
-int* arr;
+#define MAX_N 20
 
 void L814() {
 	SetConsoleCP(1251);
@@ -14,16 +14,25 @@ void L814() {
 		return;
 	}
 
+	// пропускаем BOM (EF BB BF), если файл сохранён как UTF-8 с BOM
+	unsigned char bom[3];
+	if (fread(bom, 1, 3, fin) != 3 || bom[0] != 0xEF || bom[1] != 0xBB || bom[2] != 0xBF)
+		rewind(fin);
+
+	int arr[MAX_N];
 	int length = 0;
-	int result = fscanf_s(fin, "%d", &length);
-	if (length <= 0) {
-		printf("Неверная длина! %d\n", result);
+	if (fscanf_s(fin, "%d", &length) != 1 || length <= 0 || length > MAX_N) {
+		printf("Неверная длина! %d\n", length);
 		fclose(fin);
 		return;
 	}
 
 	for (int i = 0; i < length; i++) {
-		fscanf_s(fin, "%d", &arr[i]);
+		if (fscanf_s(fin, "%d", &arr[i]) != 1) {
+			printf("В файле меньше чисел, чем %d\n", length);
+			fclose(fin);
+			return;
+		}
 	}
 	fclose(fin);
 
@@ -57,9 +66,11 @@ void L814() {
 		printf("Что-то не так при записи в файл\n");
 		return;
 	}
+	fprintf(fout, "%d\n", length);
 	for (int i = 0; i < length; i++) {
-		fprintf(fin, "%d ", arr[i]);
+		fprintf(fout, "%d ", arr[i]);
 	}
+	fprintf(fout, "\n");
 	printf("Записано\n");
 	
 	fclose(fout);
