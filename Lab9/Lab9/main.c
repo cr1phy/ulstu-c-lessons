@@ -32,6 +32,8 @@ static void drawPart1(HDC hdc) {
 }
 
 static void drawPart2(HDC hdc) {
+    drawPart2House(hdc);
+    drawPart2PineTree(hdc);
     drawBush_1(hdc, 48);
     drawSecondBush_2(hdc, 48);
     drawFence_4(hdc, 48);
@@ -45,7 +47,7 @@ typedef struct {
 
 static const Picture pictures[] = {
     { drawPart1,          L"Часть 1: рисунки 1–11" },
-    { drawPart2,          L"Часть 2: кусты, забор, трава, лестница" },
+    { drawPart2,          L"Часть 2: дом, ёлка, кусты, забор, трава, лестница" },
     { drawFourPatterns_6, L"Часть 2: четыре узора из линий" },
     { drawStClaus_1_1,    L"Дед Мороз: схема 1" },
     { drawStClaus_1_2,    L"Дед Мороз: схема 2" },
