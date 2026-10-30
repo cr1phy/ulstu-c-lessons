@@ -15,7 +15,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];
 ATOM MyRegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
 static void drawPart1(HDC hdc) {
     drawHouse_1(hdc);
@@ -103,19 +102,15 @@ static HMENU CreateMainMenu(void) {
     HMENU menu  = CreateMenu();
     HMENU file  = CreatePopupMenu();
     HMENU tasks = CreatePopupMenu();
-    HMENU help  = CreatePopupMenu();
 
     AppendMenuW(file, MF_STRING, IDM_EXIT, L"Вы&ход");
 
     AppendMenuW(tasks, MF_STRING, IDM_PART1, L"Часть &1");
     AppendMenuW(tasks, MF_STRING, IDM_PART2, L"Часть &2");
 
-    AppendMenuW(help, MF_STRING, IDM_ABOUT, L"&О программе...");
-
     AppendMenuW(menu, MF_POPUP,  (UINT_PTR)file,  L"&Файл");
     AppendMenuW(menu, MF_POPUP,  (UINT_PTR)tasks, L"&Задания");
     AppendMenuW(menu, MF_STRING, IDM_CLEAR,       L"Очистить &экран");
-    AppendMenuW(menu, MF_POPUP,  (UINT_PTR)help,  L"&Справка");
 
     return menu;
 }
@@ -134,14 +129,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (!InitInstance(hInstance, nCmdShow))
         return FALSE;
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LAB9));
-
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
 
     return (int)msg.wParam;
@@ -189,9 +180,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         case IDM_PART1: ShowPicture(hWnd, PART1_FIRST); break;
         case IDM_PART2: ShowPicture(hWnd, PART2_FIRST); break;
         case IDM_CLEAR: ShowPicture(hWnd, NO_PICTURE);  break;
-        case IDM_ABOUT:
-            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-            break;
         case IDM_EXIT:
             DestroyWindow(hWnd);
             break;
@@ -230,123 +218,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
-}
-
-#define ABOUT_TIMER 1
-#define ABOUT_TICK_MS 15
-#define ABOUT_WIDTH 440
-#define ABOUT_HEIGHT 240
-#define CORNER_SLACK 20
-
-static const WCHAR ABOUT_TEXT[] =
-L"Lab9\n\n"
-L"Нарисовано на чистом Win32.\n"
-L"Вроде как ничего не утекло.\n\n"
-L"Закрыть можно, если догонишь кнопку.\n";
-
-static HFONT aboutFont;
-static int aboutDx, aboutDy;
-static int cornerHits;
-
-static void BounceAbout(HWND hDlg) {
-    RECT win;
-    GetWindowRect(hDlg, &win);
-
-    MONITORINFO mi;
-    mi.cbSize = sizeof(mi);
-    GetMonitorInfoW(MonitorFromWindow(hDlg, MONITOR_DEFAULTTONEAREST), &mi);
-    RECT area = mi.rcWork;
-
-    int w = win.right - win.left;
-    int h = win.bottom - win.top;
-    int x = win.left + aboutDx;
-    int y = win.top + aboutDy;
-    BOOL hitX = FALSE, hitY = FALSE;
-
-    if (x <= area.left)        { x = area.left;      aboutDx = -aboutDx; hitX = TRUE; }
-    else if (x + w >= area.right)  { x = area.right - w;  aboutDx = -aboutDx; hitX = TRUE; }
-
-    if (y <= area.top)         { y = area.top;       aboutDy = -aboutDy; hitY = TRUE; }
-    else if (y + h >= area.bottom) { y = area.bottom - h; aboutDy = -aboutDy; hitY = TRUE; }
-
-    SetWindowPos(hDlg, NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-
-    BOOL nearX = x - area.left < CORNER_SLACK || area.right - (x + w) < CORNER_SLACK;
-    BOOL nearY = y - area.top < CORNER_SLACK || area.bottom - (y + h) < CORNER_SLACK;
-
-    if ((hitX && nearY) || (hitY && nearX)) {
-        WCHAR text[256];
-        cornerHits++;
-        wsprintfW(text,
-            L"ПОПАЛ В УГОЛ!!!\n\n"
-            L"Как логотип DVD, только на Win32.\n"
-            L"Углов поймано: %d\n\n"
-            L"Кнопка всё ещё ждёт тебя.", cornerHits);
-        SetDlgItemTextW(hDlg, IDC_ABOUT_TEXT, text);
-        MessageBeep(MB_ICONASTERISK);
-    }
-}
-
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
-    UNREFERENCED_PARAMETER(lParam);
-
-    switch (message) {
-    case WM_INITDIALOG: {
-
-            SetWindowTextW(hDlg, L"О программе (лови!)");
-            SetWindowPos(hDlg, NULL, 0, 0, ABOUT_WIDTH, ABOUT_HEIGHT,
-                         SWP_NOMOVE | SWP_NOZORDER);
-
-            RECT rc;
-            GetClientRect(hDlg, &rc);
-
-            aboutFont = CreateFontW(-15, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-                DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-                CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Segoe UI");
-
-            HWND text = CreateWindowExW(0, L"STATIC", ABOUT_TEXT,
-                WS_CHILD | WS_VISIBLE | SS_CENTER,
-                12, 12, rc.right - 24, rc.bottom - 64,
-                hDlg, (HMENU)IDC_ABOUT_TEXT, hInst, NULL);
-
-            HWND ok = CreateWindowExW(0, L"BUTTON", L"Поймал!",
-                WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-                (rc.right - 130) / 2, rc.bottom - 44, 130, 32,
-                hDlg, (HMENU)IDOK, hInst, NULL);
-
-            SendMessageW(text, WM_SETFONT, (WPARAM)aboutFont, TRUE);
-            SendMessageW(ok,   WM_SETFONT, (WPARAM)aboutFont, TRUE);
-
-            aboutDx = 7;
-            aboutDy = 5;
-            cornerHits = 0;
-            SetTimer(hDlg, ABOUT_TIMER, ABOUT_TICK_MS, NULL);
-
-            SetFocus(ok);
-            return (INT_PTR)FALSE;
-        }
-
-    case WM_TIMER:
-        if (wParam == ABOUT_TIMER) {
-            BounceAbout(hDlg);
-            return (INT_PTR)TRUE;
-        }
-        break;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-
-    case WM_DESTROY:
-        KillTimer(hDlg, ABOUT_TIMER);
-        if (aboutFont) {
-            DeleteObject(aboutFont);
-            aboutFont = NULL;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
 }
