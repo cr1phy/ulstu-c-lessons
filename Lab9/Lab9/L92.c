@@ -114,17 +114,17 @@ void drawLinePatterns_5(HDC hdc) {
 
     SelectObject(hdc, ladderPen);
 
-    MoveToEx(hdc, 520, 360, NULL);
-    LineTo(hdc, 520, 520);
+    MoveToEx(hdc, 650, 360, NULL);
+    LineTo(hdc, 650, 520);
 
-    MoveToEx(hdc, 580, 360, NULL);
-    LineTo(hdc, 580, 520);
+    MoveToEx(hdc, 710, 360, NULL);
+    LineTo(hdc, 710, 520);
 
     i = 0;
     int y = 380;
     do {
-        MoveToEx(hdc, 520, y, NULL);
-        LineTo(hdc, 580, y);
+        MoveToEx(hdc, 650, y, NULL);
+        LineTo(hdc, 710, y);
         y += 20;
         i++;
     } while (i < 7);
@@ -217,6 +217,63 @@ void drawFourPatterns_6(HDC hdc) {
     graph2(hdc);
     graph3(hdc);
     graph4(hdc);
+
+    SelectObject(hdc, oldPen);
+    DeleteObject(pen);
+}
+
+void drawPart2House(HDC hdc) {
+    HPEN pen = CreatePen(PS_SOLID, 3, RGB(255, 0, 255));
+    if (!pen) return;
+
+    HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+
+    MoveToEx(hdc, 150, 350, NULL);
+    LineTo(hdc, 275, 250);
+    LineTo(hdc, 400, 350);
+    LineTo(hdc, 150, 350);
+
+    MoveToEx(hdc, 150, 350, NULL);
+    LineTo(hdc, 150, 525);
+    LineTo(hdc, 400, 525);
+    LineTo(hdc, 400, 350);
+
+    MoveToEx(hdc, 225, 400, NULL);
+    LineTo(hdc, 325, 400);
+    LineTo(hdc, 325, 475);
+    LineTo(hdc, 225, 475);
+    LineTo(hdc, 225, 400);
+
+    MoveToEx(hdc, 275, 400, NULL);
+    LineTo(hdc, 275, 475);
+
+    MoveToEx(hdc, 225, 437, NULL);
+    LineTo(hdc, 325, 437);
+
+    SelectObject(hdc, oldPen);
+    DeleteObject(pen);
+}
+
+void drawPart2PineTree(HDC hdc) {
+    HPEN pen = CreatePen(PS_SOLID, 3, RGB(0, 170, 0));
+    if (!pen) return;
+
+    HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+
+    MoveToEx(hdc, 500, 400, NULL);
+    LineTo(hdc, 525, 375);
+    LineTo(hdc, 550, 400);
+    LineTo(hdc, 500, 400);
+
+    MoveToEx(hdc, 475, 450, NULL);
+    LineTo(hdc, 525, 400);
+    LineTo(hdc, 575, 450);
+    LineTo(hdc, 475, 450);
+
+    MoveToEx(hdc, 450, 525, NULL);
+    LineTo(hdc, 525, 450);
+    LineTo(hdc, 600, 525);
+    LineTo(hdc, 450, 525);
 
     SelectObject(hdc, oldPen);
     DeleteObject(pen);
