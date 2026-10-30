@@ -7,6 +7,7 @@
 #define MAX_LOADSTRING 100
 #define NO_PICTURE (-1)
 #define STATUS_HEIGHT 22
+#define PART2_MAX_COUNT 200
 
 HINSTANCE hInst;
 WCHAR szTitle[MAX_LOADSTRING];
@@ -30,12 +31,14 @@ static void drawPart1(HDC hdc) {
     drawArcs_11(hdc);
 }
 
+static int part2Count = 9;
+
 static void drawPart2(HDC hdc) {
     drawPart2House(hdc);
     drawPart2PineTree(hdc);
-    drawBush_1(hdc, 48);
-    drawSecondBush_2(hdc, 48);
-    drawFence_4(hdc, 48);
+    drawBush_1(hdc, part2Count);
+    drawSecondBush_2(hdc, part2Count);
+    drawFence_4(hdc, part2Count);
     drawLinePatterns_5(hdc);
 }
 
@@ -85,6 +88,10 @@ static void DrawStatus(HDC hdc, const RECT *client) {
     if (currentPicture == NO_PICTURE)
         lstrcpynW(text, L"  Экран чист. Любая клавиша — следующий рисунок",
                   ARRAYSIZE(text));
+    else if (currentPicture == PART2_FIRST)
+        wsprintfW(text, L"  %d / %d   %s   |   count = %d   (+ / − — изменить)",
+                  currentPicture + 1, PICTURE_COUNT,
+                  pictures[currentPicture].name, part2Count);
     else
         wsprintfW(text, L"  %d / %d   %s        ← → или любая клавиша — листать",
                   currentPicture + 1, PICTURE_COUNT, pictures[currentPicture].name);
@@ -203,11 +210,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         break;
 
     case WM_KEYDOWN:
-        if (wParam == VK_LEFT)
+        if (currentPicture == PART2_FIRST &&
+            (wParam == VK_OEM_PLUS || wParam == VK_ADD ||
+             wParam == VK_OEM_MINUS || wParam == VK_SUBTRACT)) {
+            if (wParam == VK_OEM_PLUS || wParam == VK_ADD) {
+                if (part2Count < PART2_MAX_COUNT)
+                    part2Count++;
+            } else if (part2Count > 1) {
+                part2Count--;
+            }
+            InvalidateRect(hWnd, NULL, TRUE);
+        } else if (wParam == VK_LEFT) {
             ShowPicture(hWnd, currentPicture <= 0 ? PICTURE_COUNT - 1
                                                   : currentPicture - 1);
-        else
+        } else {
             ShowPicture(hWnd, (currentPicture + 1) % PICTURE_COUNT);
+        }
         break;
 
     case WM_DESTROY:
