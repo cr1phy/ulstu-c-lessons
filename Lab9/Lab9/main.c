@@ -40,7 +40,7 @@ static void drawPart2(HDC hdc) {
     drawPart2PineTree(hdc);
     drawBush_1(hdc, part2Count);
     drawSecondBush_2(hdc, part2Count);
-    drawFence_4(hdc, part2Count);
+    drawFence_4(hdc, part2Count + 4);
     drawLinePatterns_5(hdc);
 }
 
@@ -96,9 +96,9 @@ static void DrawStatus(HDC hdc, const RECT *client) {
         lstrcpynW(text, L"  Экран чист. Любая клавиша — следующий рисунок",
                   ARRAYSIZE(text));
     else if (currentPicture == PART2_FIRST)
-        wsprintfW(text, L"  %d / %d   %s   |   count = %d   (+ / − — изменить)",
+        wsprintfW(text, L"  %d / %d   %s   |   кусты: %d, забор: %d   (+ / −)",
                   currentPicture + 1, PICTURE_COUNT,
-                  pictures[currentPicture].name, part2Count);
+                  pictures[currentPicture].name, part2Count, part2Count + 4);
     else if (currentPicture == PART2_PATTERNS)
         wsprintfW(text, L"  %d / %d   %s   |   линии: %d, %d, %d, %d   (+ / − — изменить)",
                   currentPicture + 1, PICTURE_COUNT,
