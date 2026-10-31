@@ -8,6 +8,7 @@
 #define NO_PICTURE (-1)
 #define STATUS_HEIGHT 22
 #define PART2_MAX_COUNT 200
+#define PATTERN_MAX_COUNT 64
 
 HINSTANCE hInst;
 WCHAR szTitle[MAX_LOADSTRING];
@@ -32,6 +33,7 @@ static void drawPart1(HDC hdc) {
 }
 
 static int part2Count = 9;
+static int patternCount = 16;
 
 static void drawPart2(HDC hdc) {
     drawPart2House(hdc);
@@ -42,6 +44,10 @@ static void drawPart2(HDC hdc) {
     drawLinePatterns_5(hdc);
 }
 
+static void drawPart2Patterns(HDC hdc) {
+    drawFourPatterns_6(hdc, patternCount);
+}
+
 typedef struct {
     void (*draw)(HDC hdc);
     const WCHAR *name;
@@ -50,7 +56,7 @@ typedef struct {
 static const Picture pictures[] = {
     { drawPart1,          L"Часть 1: рисунки 1–11" },
     { drawPart2,          L"Часть 2: дом, ёлка, кусты, забор, трава, лестница" },
-    { drawFourPatterns_6, L"Часть 2: четыре узора из линий" },
+    { drawPart2Patterns, L"Часть 2: четыре узора из линий" },
     { drawStClaus_1_1,    L"Дед Мороз: схема 1" },
     { drawStClaus_1_2,    L"Дед Мороз: схема 2" },
     { drawStClaus_1_3,    L"Дед Мороз: схема 3" },
@@ -72,6 +78,7 @@ static const Picture pictures[] = {
 #define PICTURE_COUNT ((int)ARRAYSIZE(pictures))
 #define PART1_FIRST 0
 #define PART2_FIRST 1
+#define PART2_PATTERNS 2
 
 static int currentPicture = PART1_FIRST;
 
@@ -92,6 +99,11 @@ static void DrawStatus(HDC hdc, const RECT *client) {
         wsprintfW(text, L"  %d / %d   %s   |   count = %d   (+ / − — изменить)",
                   currentPicture + 1, PICTURE_COUNT,
                   pictures[currentPicture].name, part2Count);
+    else if (currentPicture == PART2_PATTERNS)
+        wsprintfW(text, L"  %d / %d   %s   |   линии: %d, %d, %d, %d   (+ / − — изменить)",
+                  currentPicture + 1, PICTURE_COUNT,
+                  pictures[currentPicture].name,
+                  patternCount, patternCount - 3, patternCount, patternCount);
     else
         wsprintfW(text, L"  %d / %d   %s        ← → или любая клавиша — листать",
                   currentPicture + 1, PICTURE_COUNT, pictures[currentPicture].name);
@@ -210,14 +222,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         break;
 
     case WM_KEYDOWN:
-        if (currentPicture == PART2_FIRST &&
+        if ((currentPicture == PART2_FIRST || currentPicture == PART2_PATTERNS) &&
             (wParam == VK_OEM_PLUS || wParam == VK_ADD ||
              wParam == VK_OEM_MINUS || wParam == VK_SUBTRACT)) {
+            int *count = currentPicture == PART2_FIRST ? &part2Count : &patternCount;
+            int minCount = currentPicture == PART2_FIRST ? 1 : 4;
+            int maxCount = currentPicture == PART2_FIRST
+                ? PART2_MAX_COUNT : PATTERN_MAX_COUNT;
+
             if (wParam == VK_OEM_PLUS || wParam == VK_ADD) {
-                if (part2Count < PART2_MAX_COUNT)
-                    part2Count++;
-            } else if (part2Count > 1) {
-                part2Count--;
+                if (*count < maxCount)
+                    (*count)++;
+            } else if (*count > minCount) {
+                (*count)--;
             }
             InvalidateRect(hWnd, NULL, TRUE);
         } else if (wParam == VK_LEFT) {
