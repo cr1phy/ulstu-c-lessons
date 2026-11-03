@@ -134,10 +134,10 @@ void drawLinePatterns_5(HDC hdc) {
     DeleteObject(ladderPen);
 }
 
-void graph1(HDC hdc) {
+void graph1(HDC hdc, int count) {
     int x_from = 150, x_to = 300;
     int y_top = 100, y_bottom = 200;
-    int offset = 3, count = 16;
+    int offset = 3;
 
     int i = 0;
     double x = x_from;
@@ -155,20 +155,25 @@ void graph1(HDC hdc) {
     } while (i < count);
 }
 
-void graph2(HDC hdc) {
+void graph2(HDC hdc, int count) {
     int i = 0;
-    int count = 13;
-    int center = 5;
+    int center = (count - 1) * 5 / 12;
 
     do {
-        int x = 350 + i * 10;
+        int x = count == 1
+            ? 350
+            : 350 + 120 * i / (count - 1);
         int distance = i - center;
 
         if (distance < 0)
             distance = -distance;
 
-        int y_top = 160 - distance * 9;
-        int y_bottom = 161 + distance * 7;
+        int y_top = count == 1
+            ? 160
+            : 160 - distance * 108 / (count - 1);
+        int y_bottom = count == 1
+            ? 161
+            : 161 + distance * 84 / (count - 1);
 
         MoveToEx(hdc, x, y_top, NULL);
         LineTo(hdc, x, y_bottom);
@@ -177,13 +182,12 @@ void graph2(HDC hdc) {
     } while (i < count);
 }
 
-void graph3(HDC hdc) {
+void graph3(HDC hdc, int count) {
     int i = 0;
-    int count = 16;
 
     do {
-        int x = 550 + i * 10;
-        int y = 150 + i * 10;
+        int x = 550 + 150 * i / (count - 1);
+        int y = 150 + 150 * i / (count - 1);
 
         MoveToEx(hdc, x, 300, NULL);
         LineTo(hdc, 700, y);
@@ -192,13 +196,12 @@ void graph3(HDC hdc) {
     } while (i < count);
 }
 
-void graph4(HDC hdc) {
+void graph4(HDC hdc, int count) {
     int i = 0;
-    int count = 16;
 
     do {
-        int x = 750 + i * 10;
-        int y = 100 + i * 10;
+        int x = 750 + 150 * i / (count - 1);
+        int y = 100 + 150 * i / (count - 1);
 
         MoveToEx(hdc, 750, y, NULL);
         LineTo(hdc, x, 250);
@@ -207,16 +210,18 @@ void graph4(HDC hdc) {
     } while (i < count);
 }
 
-void drawFourPatterns_6(HDC hdc) {
+void drawFourPatterns_6(HDC hdc, int count) {
+    if (count < 4) return;
+
     HPEN pen = CreatePen(PS_SOLID, 3, RGB(255, 0, 0));
     if (!pen) return;
 
     HPEN oldPen = (HPEN)SelectObject(hdc, pen);
 
-    graph1(hdc);
-    graph2(hdc);
-    graph3(hdc);
-    graph4(hdc);
+    graph1(hdc, count);
+    graph2(hdc, count - 3);
+    graph3(hdc, count);
+    graph4(hdc, count);
 
     SelectObject(hdc, oldPen);
     DeleteObject(pen);
