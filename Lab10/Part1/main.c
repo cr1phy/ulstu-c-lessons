@@ -1,29 +1,53 @@
 ﻿#include "functions.h"
 #include <stdio.h>
+#include <ctype.h>
 #include <Windows.h>
+
+static int read_choice(void) {
+	int ch;
+	int choice;
+	int valid;
+
+	printf("> ");
+	fflush(stdout);
+
+	do {
+		ch = getchar();
+	} while (ch != EOF && ch != '\n' && isspace((unsigned char)ch));
+
+	if (ch == EOF) return 0;
+	if (ch == '\n') return -1;
+
+	choice = ch - '0';
+	valid = ch >= '0' && ch <= '9';
+
+	while ((ch = getchar()) != '\n' && ch != EOF) {
+		if (!isspace((unsigned char)ch)) valid = 0;
+	}
+
+	return valid ? choice : -1;
+}
 
 int main(void) {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
-	int choice;
+	while (1) {
+		printf("\n===== ЛР 10.1. Рекурсия =====\n");
+		printf("1. 10.1.1 - факториал\n");
+		printf("2. 10.1.2 - порядок вызовов f1, f2, f3\n");
+		printf("4. 10.1.4 - двойной рекурсивный вызов\n");
+		printf("5. 10.1.5 - рекурсия с уменьшением аргумента\n");
+		printf("6. 10.1.6 - рекурсия с увеличением аргумента\n");
+		printf("7. 10.1.7 - взаимная рекурсия\n");
+		printf("8. 10.1.8 - вложенные скобки (вариант 2)\n");
+		printf("9. 10.1.9 - треугольник и пирамида\n");
+		printf("0. Выход\n");
 
-	do {
-		printf("\n=== ЛР 10.1 ===\n");
-		printf("1. 10.1.1 (факториал)\n");
-		printf("2. 10.1.2 (f1, f2, f3)\n");
-		printf("4. 10.1.4\n");
-		printf("5. 10.1.5\n");
-		printf("6. 10.1.6\n");
-		printf("7. 10.1.7\n");
-		printf("8. 10.1.8 (вариант 2)\n");
-		printf("9. 10.1.9 (2 своих алгоритма-рисунка)\n");
-		printf("0. выход\n");
-		printf("> ");
-
-		if (scanf_s("%d", &choice) != 1) {
-			while (getchar() != '\n');  // выкинуть мусор из ввода
-			choice = -1;
+		int choice = read_choice();
+		if (choice == 0) {
+			printf("Выход\n");
+			break;
 		}
 
 		switch (choice) {
@@ -35,10 +59,12 @@ int main(void) {
 		case 7: L1017(); break;
 		case 8: L1018(); break;
 		case 9: L1019(); break;
-		case 0: printf("Выход\n"); break;
-		default: printf("Нет такого пункта\n");
+		default:
+			printf("Нет такого пункта. Введите номер из меню.\n");
+			continue;
 		}
-	} while (choice != 0);
+		printf("\n");
+	}
 
 	return 0;
 }

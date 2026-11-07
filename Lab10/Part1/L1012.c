@@ -1,9 +1,9 @@
 ﻿#include "functions.h"
 #include <stdio.h>
 
-int f1(int n) {
+void f1(int n) {
 	printf("%d ", n);
-	if (n <= 1) return 1;
+	if (n <= 1) return;
 	f1(n - 2);
 }
 

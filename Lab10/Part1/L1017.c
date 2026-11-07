@@ -1,7 +1,7 @@
 ﻿#include "functions.h"
 #include <stdio.h>
 
-void F3(int n);
+static void F3(int n);
 
 static void G3(int n) {
 	printf("*");
